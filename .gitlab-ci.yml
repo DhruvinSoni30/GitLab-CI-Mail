@@ -1,0 +1,22 @@
+stages:
+  - build
+  - notify
+
+build:
+  stage: build
+  script:
+    - mkdir reports
+    - touch reports/index.html
+    - echo "<html><h1>Some Report</h1></html>" > "reports/index.html"
+  artifacts:
+    paths:
+      - reports/
+
+send_email:
+  stage: notify
+  script: curl -s --user "api:$MAILGUN_API_KEY"
+    "https://api.mailgun.net/v3/$MAILGUN_DOMAIN/messages"
+    -F from='Gitlab <gitlab@example.com>'
+    -F to=$GITLAB_USER_EMAIL
+    -F subject='Test Result'
+    -F text='Testing some features'
